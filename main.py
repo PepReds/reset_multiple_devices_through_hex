@@ -17,24 +17,31 @@ try:
     print("Connected to router successfully")
 
     # Run command to test SSH connection
-    stdin, stdout, stderr = ssh_client.exec_command("system identity print")
+    #stdin, stdout, stderr = ssh_client.exec_command("system identity print")
+    #output = stdout.read().decode()
+    #print(output)
+
+    # Run command to establish mac-telnet connection
+    print("Establishing mac-telnet connection...")
+    stdin, stdout, stderr = ssh_client.exec_command("tool mac-telnet bc:e6:7c:72:3b:da\n")
+    time.sleep(1)
     output = stdout.read().decode()
     print(output)
 
-    # Run command to log in to device via mac-telnet
-    print("Establishing mac-telnet connection...")
-    stdin, stdout, stderr = ssh_client.exec_command(f"tool mac-telnet bc:e6:7c:72:3b:da", timeout=10)
-    time.sleep(1)
-    stdin.write(f"{username}\n")
-    time.sleep(1)
-    stdin.write(f"{password}\n")
+    # Enter telnet username and password
+    print("Entering telnet username...")
+    stdin.write("admin\n")
     stdin.flush()
+    time.sleep(1)
+
+    print("Entering telnet password...")
+    stdin.write("admin\n")
+    stdin.flush()
+    time.sleep(1)
+
+    # Print output of telnet session
     output = stdout.read().decode()
-    print(f"stdout: {output}")
-    error = stderr.read().decode()
-    print(f"stderr: {error}")
-    if error:
-        raise Exception(error)
+    print(output)
 
 except paramiko.AuthenticationException as e:
     print(f"Error: Authentication failed - {str(e)}")
